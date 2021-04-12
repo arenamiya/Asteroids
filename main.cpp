@@ -22,12 +22,40 @@
 int g_screen_width = 0;
 int g_screen_height = 0;
 
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 600;
+
+
 void on_key_press(unsigned char key, int x, int y)
 {
   fprintf(stderr, "on_key_press()\n");
   switch (key) {
     case KEY_ESC:
       exit(EXIT_SUCCESS);
+      break;
+    case 'w':
+      //move up
+      break;
+    case 'a':
+      //move left
+      break;
+    case 's':
+      //move right
+      break;
+    case 'd':
+      //move down
+      break;
+    case 'W':
+      //move up
+      break;
+    case 'A':
+      //move left
+      break;
+    case 'S':
+      //move right
+      break;
+    case 'D':
+      //move down
       break;
     default:
       break;

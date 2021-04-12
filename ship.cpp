@@ -14,5 +14,22 @@ void Ship::render() {
     glVertex3f(0.f, 0.6f, -0.5f);
 
     glEnd();
-    
+
+}
+
+
+void Ship::move_up() {
+
+}
+
+void Ship::move_left() {
+
+}
+
+void Ship::move_down() {
+
+}
+
+void Ship::move_right() {
+
 }
