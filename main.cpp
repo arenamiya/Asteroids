@@ -16,7 +16,7 @@
 # include <GL/glut.h>
 #endif
 
-#include "game.cpp"
+#include "ship.cpp"
 
 int g_screen_width = 0;
 int g_screen_height = 0;
@@ -31,25 +31,27 @@ void on_key_press(unsigned char key, int x, int y)
       exit(EXIT_SUCCESS);
       break;
     case 'w':
+      //move forward
       glutPostRedisplay();
       break;
     case 'a':
-      ship.angle += 14;
+      ship.angle += 7;
       glutPostRedisplay();
       break;
     case 'd':
-      ship.angle -= 14;
+      ship.angle -= 7;
       glutPostRedisplay();
       break;
     case 'W':
+      //move forward
       glutPostRedisplay();
       break;
     case 'A':
-      ship.angle += 14;
+      ship.angle += 7;
       glutPostRedisplay();
       break;
     case 'D':
-      ship.angle -= 14;
+      ship.angle -= 7;
       glutPostRedisplay();
       break;
     default:
@@ -59,7 +61,7 @@ void on_key_press(unsigned char key, int x, int y)
 
 void render_game()
 {
-  drawShip(ship.angle);
+  drawShip();
 }
 
 void on_display()

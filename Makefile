@@ -5,7 +5,7 @@ LDFLAGS = -framework GLUT -framework OpenGL -framework Carbon
 
 .default: all
 
-asteroids: main.o
+asteroids: main.o ship.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o asteroids main.o
 
 main.o: main.cpp
