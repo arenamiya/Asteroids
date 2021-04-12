@@ -16,77 +16,65 @@
 # include <GL/glut.h>
 #endif
 
-#include "ship.h"
+#include "game.cpp"
 
-#define KEY_ESC 27
 int g_screen_width = 0;
 int g_screen_height = 0;
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
-
 void on_key_press(unsigned char key, int x, int y)
 {
-  fprintf(stderr, "on_key_press()\n");
   switch (key) {
-    case KEY_ESC:
+    case 27:
       exit(EXIT_SUCCESS);
       break;
     case 'w':
-      //move up
+      glutPostRedisplay();
       break;
     case 'a':
-      //move left
-      break;
-    case 's':
-      //move right
+      ship.angle += 14;
+      glutPostRedisplay();
       break;
     case 'd':
-      //move down
+      ship.angle -= 14;
+      glutPostRedisplay();
       break;
     case 'W':
-      //move up
+      glutPostRedisplay();
       break;
     case 'A':
-      //move left
-      break;
-    case 'S':
-      //move right
+      ship.angle += 14;
+      glutPostRedisplay();
       break;
     case 'D':
-      //move down
+      ship.angle -= 14;
+      glutPostRedisplay();
       break;
     default:
       break;
   }
 }
 
-void render_ship()
+void render_game()
 {
-    Ship* ship = new Ship();
-    ship->render();
+  drawShip(ship.angle);
 }
 
 void on_display()
 {
-  fprintf(stderr, "on_display()\n");
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  render_ship();
+  render_game();
   
   int err;
   while ((err = glGetError()) != GL_NO_ERROR)
     printf("error: %s\n", gluErrorString(err));
 
   glutSwapBuffers();
-}
-
-void on_idle()
-{
-  glutPostRedisplay();
 }
 
 void init_app(int *argcp, char **argv)
