@@ -18,14 +18,12 @@
 # include <GL/glut.h>
 #endif
 
-#include "ship.cpp"
+#include "entities/ship.cpp"
+#include "system/game.cpp"
 
-int g_screen_width = 0;
-int g_screen_height = 0;
+const int turn_speed = 8;
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
-
+//keys
 void on_key_press(unsigned char key, int x, int y)
 {
   switch (key) {
@@ -37,11 +35,11 @@ void on_key_press(unsigned char key, int x, int y)
       glutPostRedisplay();
       break;
     case 'a':
-      ship.angle += 7;
+      ship.angle += turn_speed;
       glutPostRedisplay();
       break;
     case 'd':
-      ship.angle -= 7;
+      ship.angle -= turn_speed;
       glutPostRedisplay();
       break;
     case 'W':
@@ -49,11 +47,11 @@ void on_key_press(unsigned char key, int x, int y)
       glutPostRedisplay();
       break;
     case 'A':
-      ship.angle += 7;
+      ship.angle += turn_speed;
       glutPostRedisplay();
       break;
     case 'D':
-      ship.angle -= 7;
+      ship.angle -= turn_speed;
       glutPostRedisplay();
       break;
     default:
@@ -65,18 +63,20 @@ void on_key_press(unsigned char key, int x, int y)
   while (ship.angle > 360) { ship.angle -= 360; }
 }
 
-
+//display func
 void on_display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  drawShip();
+  draw_arena(ship.x, ship.y);
+  draw_ship();
   
   glutSwapBuffers();
 }
 
+//initialise
 void init_app(int *argcp, char **argv)
 {
   glutInit(argcp, argv);
