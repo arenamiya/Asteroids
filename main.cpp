@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+# define GL_SILENCE_DEPRECATION
+
 #if _WIN32
 # include <windows.h>
 #endif
@@ -31,7 +33,7 @@ void on_key_press(unsigned char key, int x, int y)
       exit(EXIT_SUCCESS);
       break;
     case 'w':
-      //move forward
+      moveForward();
       glutPostRedisplay();
       break;
     case 'a':
@@ -43,7 +45,7 @@ void on_key_press(unsigned char key, int x, int y)
       glutPostRedisplay();
       break;
     case 'W':
-      //move forward
+      moveForward();
       glutPostRedisplay();
       break;
     case 'A':
@@ -57,12 +59,12 @@ void on_key_press(unsigned char key, int x, int y)
     default:
       break;
   }
+
+  // angle = 360 degrees only
+  while (ship.angle < 0) { ship.angle += 360; }
+  while (ship.angle > 360) { ship.angle -= 360; }
 }
 
-void render_game()
-{
-  drawShip();
-}
 
 void on_display()
 {
@@ -70,12 +72,8 @@ void on_display()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  render_game();
+  drawShip();
   
-  int err;
-  while ((err = glGetError()) != GL_NO_ERROR)
-    printf("error: %s\n", gluErrorString(err));
-
   glutSwapBuffers();
 }
 
