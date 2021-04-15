@@ -1,41 +1,35 @@
-#include <OpenGL/gl.h>
+#ifndef _SHIP_CLASS_
+#define _SHIP_CLASS_
+
 #include <cmath>
-#include <iostream>
-using namespace std;
 
-
-struct Ship {
-    float angle = 45; //angle
-    float x = -0.5, y = -0.5; //coordinates
-    float r = 0.0, g = 1.0, b = 0.0; //colors
-    float speed = 0.05;
-} ship;
-
-void draw_ship()
+class Ship 
 {
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+    public:
+    Ship();
+    ~Ship();
+    void moveForward();
 
-    //color, translate, rotate
+    float angle; // angle
+    float x, y; // coordinates
+    float r, g, b; // colors
+    float speed; // speed
 
-    glColor3f(ship.r, ship.g, ship.b);
-    glTranslatef(ship.x, ship.y, 1.0);
-    glRotatef(ship.angle - 90, 0.0, 0.0, 1.0);
+};
 
-    //lines
-
-    glBegin(GL_POLYGON);
-    glVertex2f(0.0, 0.025);
-    glVertex2f(0.02, -0.025);
-    glVertex2f(0.0, -0.0125);
-    glVertex2f(-0.02, -0.025);
-    glEnd();
-
-    glPopMatrix();
-
+Ship::Ship()
+{
+    //default starting ship
+    angle = 45;
+    x = -0.5; y = -0.5;
+    r = 0.0; g = 1.0; b = 0.0;
+    speed = 0.05;
 }
 
-void moveForward() {
-    ship.x += cos(ship.angle * M_PI / 180) * ship.speed;
-    ship.y += sin(ship.angle * M_PI / 180) * ship.speed;
+void Ship::moveForward() 
+{
+    x += cos(angle * M_PI / 180) * speed;
+    y += sin(angle * M_PI / 180) * speed;
 }
+
+#endif
