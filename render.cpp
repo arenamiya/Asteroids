@@ -104,7 +104,6 @@ void draw_asteroid(Asteroid* asteroid)
     for(int i = 0; i < asteroid->edges || angle < 360; i++)
     {
         angle += rand() % 45 + 30;
-
         x = cos(angle * M_PI / 180) * asteroid->radius;
         y = sin(angle * M_PI / 180) * asteroid->radius;
         glVertex2f(x, y);

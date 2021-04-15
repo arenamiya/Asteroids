@@ -27,19 +27,29 @@ const int turn_speed = 8;
 
 Ship* ship;
 std::vector<Asteroid*> asteroids;
+
 int num_of_asteroids = 0;
+float border = 0.98;
+
 
 void reset_game()
 {
   ship = new Ship();
   
-  num_of_asteroids = rand() % 3 + 2; //2-5 asteroids when starting game
+  num_of_asteroids = rand() % 5 + 2; //2-7 asteroids when starting game
 
   for(int i = 0; i < num_of_asteroids; i++)
   {
     asteroids.push_back(new Asteroid(ship));
   }
 }
+
+//true if the objects coordinates are over the border's coordinates
+bool hasHitBorder(float x, float y, float border)
+{
+  return x > border || x < -border || y > border || y < -border;
+}
+
 
 //keys
 void on_key_press(unsigned char key, int x, int y)
@@ -74,9 +84,7 @@ void on_key_press(unsigned char key, int x, int y)
   while (ship->angle < 0) { ship->angle += 360; }
   while (ship->angle > 360) { ship->angle -= 360; }
 
-  float border = 0.98;
-  if(ship->x > border || ship->y > border || 
-  ship->x < -border || ship->y < -border) 
+  if(hasHitBorder(ship->x, ship->y, border)) 
     reset_game(); 
 }
 
@@ -100,9 +108,27 @@ void on_display()
 
 void timer(int value)
 {
+  float border_bounce;
   for(int i = 0; i < num_of_asteroids; i++)
   {
-    asteroids.at(i)->shoot_asteroid();
+    Asteroid* a = asteroids.at(i);
+    a->shoot_asteroid();
+
+    border_bounce = border - a->radius - 0.02;
+
+    if(hasHitBorder(a->x, a->y, border_bounce)) {
+        if(a->passedBorder) {
+          a->change_trajectory(); 
+          std::cout << " \n rotation: " << a->x << "," << a->y;
+        }
+    }
+    //if the asteroid hasnt passed the border and is inside the border now
+    if(!a->passedBorder && !hasHitBorder(a->x, a->y, border_bounce)) {
+      a->passedBorder = true;
+    }
+
+    a->has_hit_player(ship);
+
   }
 
   on_display();
@@ -112,15 +138,14 @@ void timer(int value)
 int main(int argc, char **argv) 
 {
 
+  srand(time(NULL));
   reset_game();
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   
-  
-  glutCreateWindow("Asteroids Game");
+  glutCreateWindow("Asteroids");
   glutFullScreen();
-
 
   glutKeyboardFunc(on_key_press);
   glutDisplayFunc(on_display);
