@@ -87,7 +87,6 @@ void draw_ship(Ship* ship)
 
 }
 
-
 void draw_asteroid(Asteroid* asteroid)
 {
     
@@ -101,7 +100,7 @@ void draw_asteroid(Asteroid* asteroid)
 
     int angle = 0;
     float x, y;
-    for(int i = 0; i < asteroid->edges || angle < 360; i++)
+    for(int i = 0; i < asteroid->edges || angle < 270; i++)
     {
         angle += rand() % 45 + 30;
         x = cos(angle * M_PI / 180) * asteroid->radius;
@@ -111,4 +110,44 @@ void draw_asteroid(Asteroid* asteroid)
     
     glEnd();
     glPopMatrix();
+}
+
+void draw_bullets(Ship* ship, float bulletSize)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+
+    glColor3f(1.0, 1.0, 1.0);
+
+    glPointSize(bulletSize);
+    glBegin(GL_POINTS);
+    
+    for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
+        b->shootForward();
+        glVertex2f(b->x, b->y); 
+    }
+    glEnd();
+    glPopMatrix();
+
+}
+
+//int moving defines how many particles are being drawn
+void draw_particles(Ship* ship)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+
+    glColor3f(1.0, 1.0, 1.0);
+
+    //loop
+    int i = 0;
+    for (std::list<Particle>::iterator p = ship->particles.begin(); p != ship->particles.end(); ++p) {
+        glPointSize(p->size);
+        glBegin(GL_POINTS);
+        glVertex2f(p->x, p->y);
+        glEnd();
+    }
+
+    glPopMatrix();
+
 }

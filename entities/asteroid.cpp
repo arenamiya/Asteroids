@@ -24,6 +24,7 @@ class Asteroid
     float speed; //speed
     float radius;
     float trajectory;
+    int hitPoints;
     int edges;
     bool destroyed;
     bool passedBorder;
@@ -34,10 +35,11 @@ Asteroid::Asteroid(Ship* ship)
 
     speed = rand() % max_speed;
     edges = rand() % 5 + 5; //(5-10 edges)
-    radius = float(rand() % 10 + 3) / 100;
+    int n = rand() % 10 + 3;
+    radius = float(n) / 100;
+    hitPoints = n/3;
     destroyed = false;
     trajectory = rand() % 360;
-
 
     x = cos((trajectory-180) * M_PI / 180) * off_arena_radius;
     y = sin((trajectory-180) * M_PI / 180) * off_arena_radius;
@@ -53,7 +55,6 @@ Asteroid::~Asteroid()
 
 void Asteroid::shoot_asteroid()
 {
-    
     x += cos(trajectory * M_PI / 180) * speed/100;
     y += sin(trajectory * M_PI / 180) * speed/100;
 }
@@ -71,4 +72,5 @@ bool Asteroid::has_collided_with(float x, float y, float radius)
 {
     return powf(x - this->x, 2) + powf(y - this->y, 2) < powf(this->radius, 2);
 }
+
 #endif

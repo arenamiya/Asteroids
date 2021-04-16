@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <vector>
+#include <list>
 
 # define GL_SILENCE_DEPRECATION
 
@@ -26,13 +26,12 @@
 const int turn_speed = 8;
 
 Ship* ship;
-std::vector<Asteroid*> asteroids;
+std::list<Asteroid> asteroids;
 
 int wave_round; //the current round of asteroids
 float border = 0.98; //border set to 0.98
 int new_wave = 8000; //new wave happens every 8000 ms
 int wave_timer = 0; //the current timer set in ms
-
 
 void reset_game()
 {
@@ -42,9 +41,7 @@ void reset_game()
   wave_timer = 0;
 
   asteroids.clear();
-
-  asteroids.push_back(new Asteroid(ship));
-
+  asteroids.push_back(Asteroid(ship));
 }
 
 //true if the objects coordinates are over the border's coordinates
@@ -57,38 +54,36 @@ bool hasHitBorder(float x, float y, float border)
 //keys
 void on_key_press(unsigned char key, int x, int y)
 {
-  switch (key) {
-    case 27:
-      exit(EXIT_SUCCESS);
-      break;
-    case 'w':
-      ship->moveForward();
-      break;
-    case 'a':
-      ship->angle += turn_speed;
-      break;
-    case 'd':
-      ship->angle -= turn_speed;
-      break;
-    case 'W':
-      ship->moveForward();
-      break;
-    case 'A':
-      ship->angle += turn_speed;
-      break;
-    case 'D':
-      ship->angle -= turn_speed;
-      break;
-    default:
-      break;
-  }
-
+  if(key == 27) {
+    exit(EXIT_SUCCESS);
+  } else if(key == 'w' || key == 'W') {
+    ship->moveForward();
+    ship->moving = true;
+  } else if(key == 'a' || key =='A') {
+    ship->angle += turn_speed;
+  } else if(key == 'd' || key == 'D') {
+    ship->angle -= turn_speed;
+  } 
   // angle = 360 degrees only
   while (ship->angle < 0) { ship->angle += 360; }
   while (ship->angle > 360) { ship->angle -= 360; }
 
   if(hasHitBorder(ship->x, ship->y, border)) 
     reset_game(); 
+}
+
+void on_key_up(unsigned char key, int x, int y)
+{
+  if(key == 'w' || key == 'W') ship->moving = false;
+}
+
+void on_mouse_click(int button, int state, int x, int y)
+{
+  switch(button) {
+    case GLUT_LEFT_BUTTON:
+      ship->shootBullet();
+      break;
+  }
 }
 
 //display func
@@ -100,10 +95,11 @@ void on_display()
 
   draw_arena(ship->x, ship->y);
   draw_ship(ship);
+  draw_bullets(ship, 8.0); //ship and bullet size
+  draw_particles(ship);
   
-  for(int i = 0; i < asteroids.size(); i++)
-  {
-    draw_asteroid(asteroids.at(i));
+  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) {
+    draw_asteroid(&*a);
   }
 
   glutSwapBuffers();
@@ -111,35 +107,46 @@ void on_display()
 
 void timer(int value)
 {
-
   if(wave_timer % new_wave == 0) { //wave timer % new_wave
     for(int i = 0; i < wave_round+1; i++) {
-      asteroids.push_back(new Asteroid(ship));
+      asteroids.push_back(Asteroid(ship));
     }
     wave_round++;
   }
 
   float border_bounce;
-  for(int i = 0; i < asteroids.size(); i++)
-  {
-    Asteroid* a = asteroids.at(i);
+  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) {
     a->shoot_asteroid();
 
     border_bounce = border - a->radius - 0.02;
 
-    if(hasHitBorder(a->x, a->y, border_bounce)) {
-        if(a->passedBorder) {
-          a->change_trajectory(); 
-        }
+    if(hasHitBorder(a->x, a->y, border_bounce)) { //if asteroid hits the border
+        if(a->passedBorder) a->change_trajectory(); 
     } else if(!a->passedBorder && !hasHitBorder(a->x, a->y, border_bounce)) {
       a->passedBorder = true;
     }
 
+  
     if(a->has_collided_with(ship->x, ship->y, ship->speed)) {
       reset_game();
     }
 
+    for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
+      if(a->has_collided_with(b->x, b->y, b->speed)) {
+        ship->bullets.erase(b);
+        asteroids.erase(a);
+      } else if (hasHitBorder(b->x, b->y, border)) {
+        ship->bullets.erase(b);
+      }
+    }
   }
+
+  
+
+  //change particle size every 500 ms
+  if(wave_timer % 500) ship->changeParticleSize();
+  //remove particles if the ship isn't moving
+  if(!ship->moving && ship->particles.size() > 0) ship->particles.pop_front();
 
   wave_timer += 100; //add 1 ms to wave timer
 
@@ -149,7 +156,6 @@ void timer(int value)
 
 int main(int argc, char **argv) 
 {
-
   srand(time(NULL));
   reset_game();
 
@@ -160,6 +166,9 @@ int main(int argc, char **argv)
   glutFullScreen();
 
   glutKeyboardFunc(on_key_press);
+  glutKeyboardUpFunc(on_key_up);
+  glutMouseFunc(on_mouse_click);
+
   glutDisplayFunc(on_display);
   glutTimerFunc(100, timer, 0);
   
