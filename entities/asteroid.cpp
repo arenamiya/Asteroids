@@ -18,7 +18,7 @@ class Asteroid
     ~Asteroid();
     void shoot_asteroid();
     void change_trajectory();
-    bool has_hit_player(Ship* ship);
+    bool has_collided_with(float x, float y, float radius);
 
     float x, y; //coords
     float speed; //speed
@@ -32,14 +32,6 @@ class Asteroid
 Asteroid::Asteroid(Ship* ship)
 {
 
-
-    //asteroids spawn randomly outside of the border, lol fix this
-    // if (rand() % 2 != 0)  x = -x;
-
-    // if (rand() % 2 != 0)  y = -y;
-
-    
-
     speed = rand() % max_speed;
     edges = rand() % 5 + 5; //(5-10 edges)
     radius = float(rand() % 10 + 3) / 100;
@@ -50,7 +42,6 @@ Asteroid::Asteroid(Ship* ship)
     x = cos((trajectory-180) * M_PI / 180) * off_arena_radius;
     y = sin((trajectory-180) * M_PI / 180) * off_arena_radius;
 
-    std::cout << " \n spawn: " << x << "," << y;
     passedBorder = false;
 
 }
@@ -73,12 +64,11 @@ void Asteroid::change_trajectory()
     float new_trajectory = rand() % 70 + 100; //100-170
     
     trajectory += new_trajectory;
-    std::cout << " changed trajectory \n";
 }
 
-bool Asteroid::has_hit_player(Ship* ship)
+//check if an asteroid has collided with an object that has x,y coordinates and specific radius
+bool Asteroid::has_collided_with(float x, float y, float radius)
 {
-    return ship->x > x + radius && ship->y > y + radius && ship->x < x - radius && ship->y < y - radius;
+    return powf(x - this->x, 2) + powf(y - this->y, 2) < powf(this->radius, 2);
 }
-
 #endif

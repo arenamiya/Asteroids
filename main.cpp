@@ -28,20 +28,23 @@ const int turn_speed = 8;
 Ship* ship;
 std::vector<Asteroid*> asteroids;
 
-int num_of_asteroids = 0;
-float border = 0.98;
+int wave_round; //the current round of asteroids
+float border = 0.98; //border set to 0.98
+int new_wave = 8000; //new wave happens every 8000 ms
+int wave_timer = 0; //the current timer set in ms
 
 
 void reset_game()
 {
   ship = new Ship();
-  
-  num_of_asteroids = rand() % 5 + 2; //2-7 asteroids when starting game
 
-  for(int i = 0; i < num_of_asteroids; i++)
-  {
-    asteroids.push_back(new Asteroid(ship));
-  }
+  wave_round = 1;
+  wave_timer = 0;
+
+  asteroids.clear();
+
+  asteroids.push_back(new Asteroid(ship));
+
 }
 
 //true if the objects coordinates are over the border's coordinates
@@ -98,7 +101,7 @@ void on_display()
   draw_arena(ship->x, ship->y);
   draw_ship(ship);
   
-  for(int i = 0; i < num_of_asteroids; i++)
+  for(int i = 0; i < asteroids.size(); i++)
   {
     draw_asteroid(asteroids.at(i));
   }
@@ -108,8 +111,16 @@ void on_display()
 
 void timer(int value)
 {
+
+  if(wave_timer % new_wave == 0) { //wave timer % new_wave
+    for(int i = 0; i < wave_round+1; i++) {
+      asteroids.push_back(new Asteroid(ship));
+    }
+    wave_round++;
+  }
+
   float border_bounce;
-  for(int i = 0; i < num_of_asteroids; i++)
+  for(int i = 0; i < asteroids.size(); i++)
   {
     Asteroid* a = asteroids.at(i);
     a->shoot_asteroid();
@@ -119,17 +130,18 @@ void timer(int value)
     if(hasHitBorder(a->x, a->y, border_bounce)) {
         if(a->passedBorder) {
           a->change_trajectory(); 
-          std::cout << " \n rotation: " << a->x << "," << a->y;
         }
-    }
-    //if the asteroid hasnt passed the border and is inside the border now
-    if(!a->passedBorder && !hasHitBorder(a->x, a->y, border_bounce)) {
+    } else if(!a->passedBorder && !hasHitBorder(a->x, a->y, border_bounce)) {
       a->passedBorder = true;
     }
 
-    a->has_hit_player(ship);
+    if(a->has_collided_with(ship->x, ship->y, ship->speed)) {
+      reset_game();
+    }
 
   }
+
+  wave_timer += 100; //add 1 ms to wave timer
 
   on_display();
   glutTimerFunc(100, timer, 0);
