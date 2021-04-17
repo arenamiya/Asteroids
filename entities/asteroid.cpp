@@ -19,6 +19,7 @@ class Asteroid
     void shoot_asteroid();
     void change_trajectory();
     bool has_collided_with(float x, float y);
+    bool has_collided_with(Asteroid* asteroid);
 
     float x, y; //coords
     float r, g, b;
@@ -56,6 +57,7 @@ Asteroid::Asteroid(Ship* ship)
 
 }
 
+
 void Asteroid::shoot_asteroid()
 {
     x += cos(trajectory * M_PI / 180) * speed/100;
@@ -74,5 +76,13 @@ bool Asteroid::has_collided_with(float x, float y)
 {
     return powf(x - this->x, 2) + powf(y - this->y, 2) < powf(radius, 2);
 }
+
+//check if an asteroid has collided with another asteroid
+bool Asteroid::has_collided_with(Asteroid* asteroid)
+{
+    return powf(asteroid->x - this->x, 2) + powf(asteroid->y - this->y, 2) <= powf(asteroid->radius + this->radius, 2); 
+}
+
+
 
 #endif
