@@ -1,14 +1,21 @@
+#ifndef _RENDER_FUNCTIONS_
+#define _RENDER_FUNCTIONS_
+
 #include <OpenGL/gl.h>
 #include <stdlib.h>
+#include <iostream>
+#include <string>
+
 #include "entities/ship.cpp"
 #include "entities/asteroid.cpp"
-
-#include <iostream>
 
 //this file is where all the rendering and drawing goes
 
 float warning_distance = 0.7;
 float max_outside_radius = 1.5;
+
+float arena_width = 0.99; //arena width set to 0.99
+float arena_height = 0.99; //arena height set to 0.99
 
 void draw_wall(float x1, float y1, float x2, float y2) {
     glBegin(GL_LINES);
@@ -25,22 +32,22 @@ void draw_arena(float ship_x, float ship_y)
     //left border
     if(ship_x > -warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
-    draw_wall(-0.99, 0.99, -0.99, -0.99);
+    draw_wall(-arena_width, arena_height, -arena_width, -arena_height);
 
     //right border 
     if(ship_x < warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
-    draw_wall(0.99, -0.99, 0.99, 0.99);
+    draw_wall(arena_width, -arena_height, arena_width, arena_height);
 
     // top border
     if(ship_y < warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
-    draw_wall(-0.99, 0.99, 0.99, 0.99);
+    draw_wall(-arena_width, arena_height, arena_width, arena_height);
 
     // bottom border
     if(ship_y > -warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
-    draw_wall(-0.99, -0.99, 0.99, -0.99);
+    draw_wall(-arena_width, -arena_height, arena_width, -arena_height);
 
     glPopMatrix();
 
@@ -64,6 +71,14 @@ void draw_ship(Ship* ship)
     glVertex2f(-0.02, -0.025);
     glEnd();
 
+    glColor3f(ship->r2, ship->g2, ship->b2);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(0.0, 0.025);
+    glVertex2f(0.02, -0.025);
+    glVertex2f(0.0, -0.0125);
+    glVertex2f(-0.02, -0.025);
+    glEnd();
+
     glPopMatrix();
 
 }
@@ -74,7 +89,7 @@ void draw_asteroid(Asteroid* asteroid)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(asteroid->r, asteroid->g, asteroid->b);
     glTranslatef(asteroid->x, asteroid->y, 1.0);
 
     glBegin(GL_LINE_LOOP);
@@ -132,3 +147,14 @@ void draw_particles(Ship* ship)
     glPopMatrix();
 
 }
+
+void draw_text(std::string string, float start_x, float y) {
+
+    glRasterPos2f(start_x, y);
+    for (int i = 0; i < string.length(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
+    }
+
+}
+
+#endif

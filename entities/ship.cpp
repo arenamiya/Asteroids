@@ -16,14 +16,14 @@ class Ship
 {
     public:
     Ship();
-    ~Ship();
     void moveForward();
     void changeParticleSize();
     void shootBullet();
 
     float angle; // angle
     float x, y; // coordinates
-    float r, g, b; // colors
+    float r, g, b; // fill colors
+    float r2, g2, b2; //outline colors
     float speed; // speed
     bool moving;
 
@@ -37,14 +37,14 @@ class Ship
 
 Ship::Ship()
 {
-    //default starting ship
     angle = 45;
-    x = -0.5; y = -0.5;
-    r = 0.0; g = 1.0; b = 0.0;
+    x = -0.5; y = -0.5; 
+    r = 0.0; g = 1.0; b = 0.0; //player fill color
+    r2 = 0; g2 = 1; b2 = 0; //player outline color
     speed = 0.02;
     moving = false;
     firingRate = 0.1;
-    maxBullets = 10;
+    maxBullets = 6;
 }
 
 /** moves x y coordinates & 
@@ -59,7 +59,7 @@ void Ship::moveForward()
     p.y = y;
     p.size = 10.0;
     particles.push_back(p);
-    if(particles.size() > 10) 
+    if(particles.size() > 5) 
         particles.pop_front();
 
     x += cos(angle * M_PI / 180) * speed;
@@ -71,9 +71,7 @@ void Ship::moveForward()
 void Ship::changeParticleSize()
 {
     for (std::list<Particle>::iterator p=particles.begin(); p != particles.end(); ++p)
-    {
-        p->size -= 1.0;
-    }
+     p->size -= 0.4;
 }
 
 void Ship::shootBullet()

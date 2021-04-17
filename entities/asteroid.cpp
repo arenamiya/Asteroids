@@ -7,6 +7,7 @@
 #include <iostream>
 
 int max_asteroid_speed = 5;
+int min_asteroid_speed = 1;
 
 float off_arena_radius = 2.0;
 
@@ -15,12 +16,12 @@ class Asteroid
 
     public:
     Asteroid(Ship* ship);
-    ~Asteroid();
     void shoot_asteroid();
     void change_trajectory();
     bool has_collided_with(float x, float y);
 
     float x, y; //coords
+    float r, g, b;
     float speed; //speed
     float radius;
     float trajectory;
@@ -34,7 +35,9 @@ class Asteroid
 Asteroid::Asteroid(Ship* ship)
 {
 
-    speed = rand() % max_asteroid_speed;
+    r = 1; g = 1; b = 1;
+
+    speed = rand() % max_asteroid_speed + 1;
     edges = rand() % 5 + 5; //(5-10 edges)
 
     int n = rand() % 10 + 3; 
@@ -53,11 +56,6 @@ Asteroid::Asteroid(Ship* ship)
 
 }
 
-Asteroid::~Asteroid()
-{
-
-}
-
 void Asteroid::shoot_asteroid()
 {
     x += cos(trajectory * M_PI / 180) * speed/100;
@@ -68,7 +66,6 @@ void Asteroid::change_trajectory()
 {
     float old_trajectory = trajectory;
     float new_trajectory = rand() % 70 + 100; //100-170
-    
     trajectory += new_trajectory;
 }
 
