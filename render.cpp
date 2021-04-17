@@ -137,7 +137,7 @@ void draw_particles(Ship* ship)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(0.3, 0.3, 0.3);
 
     //loop
     int i = 0;

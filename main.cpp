@@ -23,7 +23,7 @@
 #include "render.cpp"
 #include "entities/ship.cpp"
 
-const int turn_speed = 8;
+const int turn_speed = 18;
 
 Ship* ship;
 std::list<Asteroid> asteroids;
@@ -136,8 +136,12 @@ void timer(int value)
     for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
       if(a->has_collided_with(b->x, b->y, b->speed)) {
         ship->bullets.erase(b);
-        asteroids.erase(a);
-        break;
+        if(a->hitPoints > 0) {
+          a->hitPoints -= 1;
+        } else {
+          asteroids.erase(a);
+          break;
+        }
       } else if (hasHitBorder(b->x, b->y, border)) {
         ship->bullets.erase(b);
       }
