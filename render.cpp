@@ -16,6 +16,7 @@ void draw_wall(float x1, float y1, float x2, float y2) {
     glVertex2f(x2, y2);
     glEnd();
 }
+
 void draw_arena(float ship_x, float ship_y)
 {
     glMatrixMode(GL_MODELVIEW);
@@ -27,17 +28,17 @@ void draw_arena(float ship_x, float ship_y)
     draw_wall(-0.99, 0.99, -0.99, -0.99);
 
     //right border 
-    if(ship_x < 0.7) glColor3f(0.0, 1.0, 0.0); //green
+    if(ship_x < warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
     draw_wall(0.99, -0.99, 0.99, 0.99);
 
     // top border
-    if(ship_y < 0.7) glColor3f(0.0, 1.0, 0.0); //green
+    if(ship_y < warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
     draw_wall(-0.99, 0.99, 0.99, 0.99);
 
     // bottom border
-    if(ship_y > -0.7) glColor3f(0.0, 1.0, 0.0); //green
+    if(ship_y > -warning_distance) glColor3f(0.0, 1.0, 0.0); //green
     else glColor3f(1.0, 0.0, 0.0); //red
     draw_wall(-0.99, -0.99, 0.99, -0.99);
 
@@ -45,20 +46,17 @@ void draw_arena(float ship_x, float ship_y)
 
 }
 
-
 void draw_ship(Ship* ship)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
     //color, translate, rotate
-
     glColor3f(ship->r, ship->g, ship->b);
     glTranslatef(ship->x, ship->y, 1.0);
     glRotatef(ship->angle - 90, 0.0, 0.0, 1.0);
 
     //lines
-
     glBegin(GL_POLYGON);
     glVertex2f(0.0, 0.025);
     glVertex2f(0.02, -0.025);

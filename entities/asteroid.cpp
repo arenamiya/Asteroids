@@ -6,7 +6,7 @@
 #include <random>
 #include <iostream>
 
-int max_speed = 5;
+int max_asteroid_speed = 5;
 
 float off_arena_radius = 2.0;
 
@@ -18,13 +18,14 @@ class Asteroid
     ~Asteroid();
     void shoot_asteroid();
     void change_trajectory();
-    bool has_collided_with(float x, float y, float radius);
+    bool has_collided_with(float x, float y);
 
     float x, y; //coords
     float speed; //speed
     float radius;
     float trajectory;
     int hitPoints;
+    int points;
     int edges;
     bool destroyed;
     bool passedBorder;
@@ -33,11 +34,15 @@ class Asteroid
 Asteroid::Asteroid(Ship* ship)
 {
 
-    speed = rand() % max_speed;
+    speed = rand() % max_asteroid_speed;
     edges = rand() % 5 + 5; //(5-10 edges)
-    int n = rand() % 10 + 3;
+
+    int n = rand() % 10 + 3; 
+    //a random n decides radius, HP and the score points of the asteroid
     radius = float(n) / 100;
-    hitPoints = n/3;
+    hitPoints = n/4;
+    points = hitPoints * 100;
+
     destroyed = false;
     trajectory = rand() % 360;
 
@@ -68,9 +73,9 @@ void Asteroid::change_trajectory()
 }
 
 //check if an asteroid has collided with an object that has x,y coordinates and specific radius
-bool Asteroid::has_collided_with(float x, float y, float radius)
+bool Asteroid::has_collided_with(float x, float y)
 {
-    return powf(x - this->x, 2) + powf(y - this->y, 2) < powf(this->radius, 2);
+    return powf(x - this->x, 2) + powf(y - this->y, 2) < powf(radius, 2);
 }
 
 #endif

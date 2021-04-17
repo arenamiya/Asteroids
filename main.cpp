@@ -24,6 +24,8 @@
 #include "entities/ship.cpp"
 
 const int turn_speed = 18;
+const float max_speed = 0.1;
+const float min_speed = 0.02;
 
 Ship* ship;
 std::list<Asteroid> asteroids;
@@ -32,6 +34,7 @@ int wave_round; //the current round of asteroids
 float border = 0.98; //border set to 0.98
 int new_wave = 8000; //new wave happens every 8000 ms
 int wave_timer = 0; //the current timer set in ms
+int score = 0;
 
 void reset_game()
 {
@@ -57,6 +60,7 @@ void on_key_press(unsigned char key, int x, int y)
   if(key == 27) {
     exit(EXIT_SUCCESS);
   } else if(key == 'w' || key == 'W') {
+    if(ship->speed < max_speed) ship->speed += 0.005;
     ship->moveForward();
     ship->moving = true;
   } else if(key == 'a' || key =='A') {
@@ -74,7 +78,13 @@ void on_key_press(unsigned char key, int x, int y)
 
 void on_key_up(unsigned char key, int x, int y)
 {
-  if(key == 'w' || key == 'W') ship->moving = false;
+  if(key == 'w' || key == 'W') {
+    if(ship->speed >= min_speed) {
+      ship->speed -= 0.005;
+      ship->moveForward();
+    }
+    ship->moving = false;
+  }
 }
 
 void on_mouse_click(int button, int state, int x, int y)
@@ -128,17 +138,20 @@ void timer(int value)
     }
 
   
-    if(a->has_collided_with(ship->x, ship->y, ship->speed)) {
+    if(a->has_collided_with(ship->x, ship->y)) {
+      std::cout << "\ntotal amount scored: " << score;
       reset_game();
       break;
     }
 
     for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
-      if(a->has_collided_with(b->x, b->y, b->speed)) {
+      if(a->has_collided_with(b->x, b->y)) {
         ship->bullets.erase(b);
         if(a->hitPoints > 0) {
           a->hitPoints -= 1;
         } else {
+          score += a->points;
+          std::cout << "\ncurrent score: " << score;
           asteroids.erase(a);
           break;
         }

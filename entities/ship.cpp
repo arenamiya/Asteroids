@@ -41,7 +41,7 @@ Ship::Ship()
     angle = 45;
     x = -0.5; y = -0.5;
     r = 0.0; g = 1.0; b = 0.0;
-    speed = 0.08;
+    speed = 0.02;
     moving = false;
     firingRate = 0.1;
     maxBullets = 10;
