@@ -5,58 +5,41 @@
 
 #include <iostream>
 
-float warning_distance = 0.7;
+//this file is where all the rendering and drawing goes
 
+float warning_distance = 0.7;
 float max_outside_radius = 1.5;
 
+void draw_wall(float x1, float y1, float x2, float y2) {
+    glBegin(GL_LINES);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y2);
+    glEnd();
+}
 void draw_arena(float ship_x, float ship_y)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     
     //left border
-    glBegin(GL_LINES); 
-    if(ship_x > -warning_distance) {
-        glColor3f(0.0, 1.0, 0.0); //green
-    } else { 
-        glColor3f(1.0, 0.0, 0.0); //red
-    }
-    glVertex2f(-0.99, 0.99);
-    glVertex2f(-0.99, -0.99);
-    glEnd();
+    if(ship_x > -warning_distance) glColor3f(0.0, 1.0, 0.0); //green
+    else glColor3f(1.0, 0.0, 0.0); //red
+    draw_wall(-0.99, 0.99, -0.99, -0.99);
 
-    //right border
-    glBegin(GL_LINES); 
-    if(ship_x < 0.7) {
-        glColor3f(0.0, 1.0, 0.0); //green
-    } else { 
-        glColor3f(1.0, 0.0, 0.0); //red
-    }
-    glVertex2f(0.99, -0.99);
-    glVertex2f(0.99, 0.99);
-    glEnd();
+    //right border 
+    if(ship_x < 0.7) glColor3f(0.0, 1.0, 0.0); //green
+    else glColor3f(1.0, 0.0, 0.0); //red
+    draw_wall(0.99, -0.99, 0.99, 0.99);
 
     // top border
-    glBegin(GL_LINES); 
-    if(ship_y < 0.7) {
-        glColor3f(0.0, 1.0, 0.0); //green
-    } else { 
-        glColor3f(1.0, 0.0, 0.0); //red
-    }
-    glVertex2f(-0.99, 0.99);
-    glVertex2f(0.99, 0.99);
-    glEnd();
+    if(ship_y < 0.7) glColor3f(0.0, 1.0, 0.0); //green
+    else glColor3f(1.0, 0.0, 0.0); //red
+    draw_wall(-0.99, 0.99, 0.99, 0.99);
 
     // bottom border
-    glBegin(GL_LINES); 
-    if(ship_y > -0.7) {
-        glColor3f(0.0, 1.0, 0.0); //green
-    } else { 
-        glColor3f(1.0, 0.0, 0.0); //red
-    }
-    glVertex2f(-0.99, -0.99);
-    glVertex2f(0.99, -0.99);
-    glEnd();
+    if(ship_y > -0.7) glColor3f(0.0, 1.0, 0.0); //green
+    else glColor3f(1.0, 0.0, 0.0); //red
+    draw_wall(-0.99, -0.99, 0.99, -0.99);
 
     glPopMatrix();
 
@@ -123,7 +106,7 @@ void draw_bullets(Ship* ship, float bulletSize)
     glBegin(GL_POINTS);
     
     for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
-        b->shootForward();
+        b->shootForward(); //bullets move at a forward trajectory
         glVertex2f(b->x, b->y); 
     }
     glEnd();
