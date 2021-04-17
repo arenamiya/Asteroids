@@ -89,6 +89,7 @@ void on_mouse_click(int button, int state, int x, int y)
 //display func
 void on_display()
 {
+  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -129,12 +130,14 @@ void timer(int value)
   
     if(a->has_collided_with(ship->x, ship->y, ship->speed)) {
       reset_game();
+      break;
     }
 
     for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
       if(a->has_collided_with(b->x, b->y, b->speed)) {
         ship->bullets.erase(b);
         asteroids.erase(a);
+        break;
       } else if (hasHitBorder(b->x, b->y, border)) {
         ship->bullets.erase(b);
       }
@@ -150,8 +153,8 @@ void timer(int value)
 
   wave_timer += 100; //add 1 ms to wave timer
 
-  on_display();
   glutTimerFunc(100, timer, 0);
+  on_display();
 }
 
 int main(int argc, char **argv) 
