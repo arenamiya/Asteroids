@@ -32,7 +32,6 @@
 int wave_round; //the current round of asteroids
 int wave_timer = 0; //the current timer set in ms
 int score = 0;
-int high_score = 0;
 bool game_over = true;
 
 Ship* ship;
@@ -171,7 +170,10 @@ void timer(int value)
           a->hitPoints -= 1;
         } else {
           score += a->points * wave_round;
-          std::cout << "\ncurrent score: " << score;
+          if(!a->split) {
+            asteroids.push_back(Asteroid(&*a));
+            asteroids.push_back(Asteroid(&*a));
+          } 
           asteroids.erase(a);
           break;
         }

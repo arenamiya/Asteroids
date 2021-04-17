@@ -16,6 +16,7 @@ class Asteroid
 
     public:
     Asteroid(Ship* ship);
+    Asteroid(Asteroid* asteroid);
     void shoot_asteroid();
     void change_trajectory();
     bool has_collided_with(float x, float y);
@@ -31,6 +32,7 @@ class Asteroid
     int edges;
     bool destroyed;
     bool passedBorder;
+    bool split;
 };
 
 Asteroid::Asteroid(Ship* ship)
@@ -54,6 +56,29 @@ Asteroid::Asteroid(Ship* ship)
     y = sin((trajectory-180) * M_PI / 180) * off_arena_radius;
 
     passedBorder = false;
+    split = false;
+
+}
+
+Asteroid::Asteroid(Asteroid* asteroid)
+{
+    r = 1; g = 1; b = 1;
+
+    speed = asteroid->speed;
+    edges = rand() % 5 + 5;
+
+    radius = asteroid->radius / 2;
+    hitPoints = asteroid->hitPoints / 4;
+    points = hitPoints * 100;
+
+    destroyed = false;
+    trajectory = rand() % 360;
+
+    x = asteroid->x;
+    y = asteroid->y;
+
+    passedBorder = true;
+    split = true;
 
 }
 
