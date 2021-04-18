@@ -15,12 +15,11 @@ class Asteroid
 {
 
     public:
-    Asteroid(Ship* ship);
+    Asteroid();
     Asteroid(Asteroid* asteroid);
     void shoot_asteroid();
     void change_trajectory();
-    bool has_collided_with(float x, float y);
-    bool has_collided_with(Asteroid* asteroid);
+    bool has_collided_with(float x, float y, float radius);
 
     float x, y; //coords
     float r, g, b;
@@ -33,17 +32,19 @@ class Asteroid
     bool destroyed;
     bool passedBorder;
     bool split;
+    bool justSplit;
+    bool hittingWall;
 };
 
-Asteroid::Asteroid(Ship* ship)
+Asteroid::Asteroid()
 {
 
     r = 1; g = 1; b = 1;
 
     speed = rand() % max_asteroid_speed + 1;
-    edges = rand() % 5 + 5; //(5-10 edges)
+    edges = rand() % 5 + 5; //(5-15 edges)
 
-    int n = rand() % 10 + 3; 
+    int n = rand() % 10 + 5; 
     //a random n decides radius, HP and the score points of the asteroid
     radius = float(n) / 100;
     hitPoints = n/4;
@@ -57,6 +58,8 @@ Asteroid::Asteroid(Ship* ship)
 
     passedBorder = false;
     split = false;
+    justSplit = false;
+    hittingWall = false;
 
 }
 
@@ -79,6 +82,8 @@ Asteroid::Asteroid(Asteroid* asteroid)
 
     passedBorder = true;
     split = true;
+    justSplit = true;
+    hittingWall = false;
 
 }
 
@@ -92,20 +97,14 @@ void Asteroid::shoot_asteroid()
 void Asteroid::change_trajectory()
 {
     float old_trajectory = trajectory;
-    float new_trajectory = rand() % 70 + 100; //100-170
+    float new_trajectory = rand() % 90 + 90; //90-180 deg
     trajectory += new_trajectory;
 }
 
-//check if an asteroid has collided with an object that has x,y coordinates and specific radius
-bool Asteroid::has_collided_with(float x, float y)
+//check if an asteroid has collided an object that has x,y coordinates and specific radius
+bool Asteroid::has_collided_with(float x, float y, float radius)
 {
-    return powf(x - this->x, 2) + powf(y - this->y, 2) < powf(radius, 2);
-}
-
-//check if an asteroid has collided with another asteroid
-bool Asteroid::has_collided_with(Asteroid* asteroid)
-{
-    return powf(asteroid->x - this->x, 2) + powf(asteroid->y - this->y, 2) <= powf(asteroid->radius + this->radius, 2); 
+    return powf(x - this->x, 2) + powf(y - this->y, 2) <= powf(radius + this->radius, 2); 
 }
 
 

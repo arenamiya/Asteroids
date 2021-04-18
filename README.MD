@@ -1,11 +1,10 @@
 # ASTEROIDS – INTERACTIVE 3D GRAPHICS & ANIMATION.
 s3728738 – Aren Carter Balgos
 
-
 ## FEATURES THAT HAVE BEEN IMPLEMENTED :
 
     LEVEL 1 :
-        1. ✔ Screen Mode ✔
+        1. ✔ Screen Mode
         2. ✔ The Arena 
         3. ✔ Ready Player 1 
         4. ✔ Starting Location 

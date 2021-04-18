@@ -3,11 +3,10 @@
 
 bool keystate[4];
 /**
- * keystate 0 = escape
- * keystate 1 = w / W
- * keystate 2 = a / A
- * keystate 3 = d / D
- * keystate 4 = any other key
+ * keystate 0 = escape (quit)
+ * keystate 1 = w / W (forward)
+ * keystate 2 = a / A (turn)
+ * keystate 3 = d / D (turn)
  * **/
 
 bool start_game = false;
