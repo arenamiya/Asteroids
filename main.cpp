@@ -104,22 +104,7 @@ void on_display()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  draw_arena(ship->x, ship->y);
   draw_particles(ship->particles);
-  draw_ship(ship);
-  draw_bullets(ship, 7.0); //ship and bullet size
-  draw_text(std::to_string(score), -0.95, 0.9);
-  draw_text(std::to_string(wave_timer/1000), 0.9, 0.9);
-
-  if(!start_game) {
-    draw_text("Press any key to start...", -0.1, 0);
-  } else if (game_over && start_game) {
-    draw_text("GAME OVER.", -0.05, 0.01);
-    draw_text("Press any key to play again...", -0.1, -0.03);
-  }
-
-  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) 
-    draw_asteroid(&*a);
 
   for(std::list<Asteroid>::iterator d = destroyed_asteroids.begin(); d != destroyed_asteroids.end(); ++d) {
     d->shoot_particles();
@@ -131,6 +116,25 @@ void on_display()
     }
     draw_particles(d->particles);
   }
+
+  draw_bullets(ship, 7.0); //ship and bullet size
+
+  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) 
+    draw_asteroid(&*a);
+
+  draw_ship(ship);
+
+  draw_text(std::to_string(score), -0.95, 0.9);
+  draw_text(std::to_string(wave_timer/1000), 0.9, 0.9);
+
+  if(!start_game) {
+    draw_text("Press any key to start...", -0.1, 0);
+  } else if (game_over && start_game) {
+    draw_text("GAME OVER.", -0.05, 0.01);
+    draw_text("Press any key to play again...", -0.1, -0.03);
+  }
+
+  draw_arena(ship->x, ship->y);
 
   glutSwapBuffers();
 }
