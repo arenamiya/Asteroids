@@ -127,8 +127,7 @@ void draw_bullets(Ship* ship, float bulletSize)
 
 }
 
-//int moving defines how many particles are being drawn
-void draw_particles(Ship* ship)
+void draw_particles(std::list<Particle> particles)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -137,7 +136,7 @@ void draw_particles(Ship* ship)
 
     //loop
     int i = 0;
-    for (std::list<Particle>::iterator p = ship->particles.begin(); p != ship->particles.end(); ++p) {
+    for (std::list<Particle>::iterator p = particles.begin(); p != particles.end(); ++p) {
         glPointSize(p->size);
         glBegin(GL_POINTS);
         glVertex2f(p->x, p->y);
@@ -145,7 +144,6 @@ void draw_particles(Ship* ship)
     }
 
     glPopMatrix();
-
 }
 
 void draw_text(std::string string, float start_x, float y) {

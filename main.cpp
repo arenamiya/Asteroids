@@ -36,6 +36,7 @@ bool game_over = true;
 
 Ship* ship;
 std::list<Asteroid> asteroids;
+std::list<Asteroid> destroyed_asteroids;
 
 void reset_game()
 {
@@ -51,7 +52,7 @@ void reset_game()
 }
 
 //true if the objects coordinates are over the border's coordinates
-bool hasHitBorder(float x, float y)
+bool has_hit_border(float x, float y)
 {
   float border_width = arena_width - 0.03;
   float border_height = arena_height - 0.03;
@@ -63,7 +64,7 @@ void on_mouse_click(int button, int state, int x, int y)
 {
   switch(button) {
     case GLUT_LEFT_BUTTON:
-      ship->shootBullet();
+      ship->shoot_bullet();
       break;
   }
 }
@@ -76,11 +77,11 @@ void keys()
 
     if(keystate[1]) { //forward W key
         if(ship->speed < MAX_SPEED) ship->speed += 0.003;
-        ship->moveForward();
+        ship->move_forward();
     } else {
         if(ship->speed >= MIN_SPEED) {
           ship->speed -= 0.005;
-          ship->moveForward();
+          ship->move_forward();
         }
         ship->moving = false;
     }
@@ -104,7 +105,7 @@ void on_display()
   glLoadIdentity();
 
   draw_arena(ship->x, ship->y);
-  draw_particles(ship);
+  draw_particles(ship->particles);
   draw_ship(ship);
   draw_bullets(ship, 7.0); //ship and bullet size
   draw_text(std::to_string(score), -0.95, 0.9);
@@ -117,8 +118,18 @@ void on_display()
     draw_text("Press any key to play again...", -0.1, -0.03);
   }
 
-  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) {
+  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) 
     draw_asteroid(&*a);
+
+  for(std::list<Asteroid>::iterator d = destroyed_asteroids.begin(); d != destroyed_asteroids.end(); ++d) {
+    d->shoot_particles();
+    if(d->particleSize >= 0.5 && wave_timer % 500) {
+      d->change_particle_size();
+    } else if (d->particleSize < 0.5) {
+      destroyed_asteroids.erase(d);
+      break;
+    }
+    draw_particles(d->particles);
   }
 
   glutSwapBuffers();
@@ -129,13 +140,13 @@ void asteroid_functions() {
     a->shoot_asteroid();
 
     if(a->passedBorder) { //check if asteroids hit border
-        if(!a->hittingWall && hasHitBorder(a->x, a->y)) {
+        if(!a->hittingWall && has_hit_border(a->x, a->y)) {
           a->change_trajectory(); 
           a->hittingWall = true;
-        } else if (a->hittingWall && !hasHitBorder(a->x, a->y)) {
+        } else if (a->hittingWall && !has_hit_border(a->x, a->y)) {
           a->hittingWall = false;
         }
-    } else if(!a->passedBorder && !hasHitBorder(a->x, a->y)) {
+    } else if(!a->passedBorder && !has_hit_border(a->x, a->y)) {
       //erase asteroid if it never goes into the border
       if(!(powf(a->x - 0, 2) + powf(a->y - 0, 2) < powf(2.0, 2))) { 
         asteroids.erase(a);
@@ -170,13 +181,20 @@ void asteroid_functions() {
           if(!a->split) { //check if an asteroid hasn't been split already
             asteroids.push_back(Asteroid(&*a));
             asteroids.push_back(Asteroid(&*a));
-          } 
+          } else {
+            a->generate_particles();
+            destroyed_asteroids.push_back(*a);
+          }
           asteroids.erase(a);
           break;
         }
-      } else if (hasHitBorder(b->x, b->y)) { //check if bullets collides with wall
+      } else if (has_hit_border(b->x, b->y)) { //check if bullets collides with wall
         ship->bullets.erase(b);
       }
+    }
+
+    if(wave_timer % 500 == 0) {
+      a->change_particle_size();
     }
 
   }
@@ -188,7 +206,7 @@ void timer(int value)
   while (ship->angle < 0) { ship->angle += 360; }
   while (ship->angle > 360) { ship->angle -= 360; }
 
-  if(hasHitBorder(ship->x, ship->y)) { //check if ship has hit the border
+  if(has_hit_border(ship->x, ship->y)) { //check if ship has hit the border
     game_over = true;
     new_round = false;
   }
@@ -202,7 +220,7 @@ void timer(int value)
 
   asteroid_functions();
 
-  if(wave_timer % 500) ship->changeParticleSize(); //change particle size every 500 ms
+  if(wave_timer % 500) ship->change_particle_size(); //change particle size every 500 ms
   if(!ship->moving && ship->particles.size() > 0) ship->particles.pop_front(); //remove particles if the ship isn't moving
 
   wave_timer += 100; //add 100 ms to wave timer

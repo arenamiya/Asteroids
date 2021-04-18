@@ -30,9 +30,9 @@ s3728738 – Aren Carter Balgos
 
     LEVEL 4 :
         1. ✔ Bouncies 
-        2. 𐄂 Bouncies 2 
+        2. ✔ Bouncies 2 
         3. ✔ Do The Splits
-        4. 𐄂 Earth Shattering Kaboom 
+        4. ✔ Earth Shattering Kaboom 
 
     BONUS FEATURES :
         1. ✔ Better Ship Movement

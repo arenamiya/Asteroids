@@ -2,23 +2,17 @@
 #define _SHIP_CLASS_
 
 #include "bullet.cpp"
+#include "particle.cpp"
 #include <cmath>
 #include <list>
-
-struct Particle
-{
-    float x;
-    float y;
-    float size;
-};
 
 class Ship 
 {
     public:
     Ship();
-    void moveForward();
-    void changeParticleSize();
-    void shootBullet();
+    void move_forward();
+    void change_particle_size();
+    void shoot_bullet();
 
     float angle; // angle
     float x, y; // coordinates
@@ -51,7 +45,7 @@ Ship::Ship()
  * adds previous position into the particles list,
  * then deletes the last position from the particles list
 **/
-void Ship::moveForward() 
+void Ship::move_forward() 
 {
 
     Particle p;
@@ -68,13 +62,13 @@ void Ship::moveForward()
     
 }
 
-void Ship::changeParticleSize()
+void Ship::change_particle_size()
 {
     for (std::list<Particle>::iterator p=particles.begin(); p != particles.end(); ++p)
      p->size -= 0.4;
 }
 
-void Ship::shootBullet()
+void Ship::shoot_bullet()
 {
     if(bullets.size() < maxBullets) {
         Bullet b = Bullet(x, y, angle, 0.1);

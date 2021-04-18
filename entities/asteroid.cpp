@@ -5,6 +5,8 @@
 #include <cmath>
 #include <random>
 #include <iostream>
+#include <list>
+#include "particle.cpp"
 
 int max_asteroid_speed = 5;
 int min_asteroid_speed = 1;
@@ -20,6 +22,9 @@ class Asteroid
     void shoot_asteroid();
     void change_trajectory();
     bool has_collided_with(float x, float y, float radius);
+    void generate_particles();
+    void shoot_particles();
+    void change_particle_size();
 
     float x, y; //coords
     float r, g, b;
@@ -34,6 +39,9 @@ class Asteroid
     bool split;
     bool justSplit;
     bool hittingWall;
+    std::list<Particle> particles;
+    float particleSize;
+
 };
 
 Asteroid::Asteroid()
@@ -41,7 +49,7 @@ Asteroid::Asteroid()
 
     r = 1; g = 1; b = 1;
 
-    speed = rand() % max_asteroid_speed + 1;
+    speed = rand() % max_asteroid_speed + min_asteroid_speed;
     edges = rand() % 5 + 5; //(5-15 edges)
 
     int n = rand() % 10 + 5; 
@@ -107,6 +115,36 @@ bool Asteroid::has_collided_with(float x, float y, float radius)
     return powf(x - this->x, 2) + powf(y - this->y, 2) <= powf(radius + this->radius, 2); 
 }
 
+void Asteroid::generate_particles()
+{
 
+    int n = rand() % 10 + 5; //generate n 5-15 particles
+    Particle p;
 
+    for(int i = 0; i < n; i++) {
+        p.x = x;
+        p.y = y;
+        p.trajectory = rand() % 360;
+        p.speed = (rand() % max_asteroid_speed + min_asteroid_speed)/2;
+        p.size = 10;
+        particles.push_back(p);
+    }
+
+    particleSize = 10;
+}
+
+void Asteroid::shoot_particles()
+{
+    for (std::list<Particle>::iterator p = particles.begin(); p != particles.end(); ++p) {
+        p->x += cos(p->trajectory * M_PI / 180) * p->speed/100;
+        p->y += sin(p->trajectory * M_PI / 180) * p->speed/100;
+    }
+}
+
+void Asteroid::change_particle_size()
+{
+    particleSize -= 0.4;
+    for (std::list<Particle>::iterator p=particles.begin(); p != particles.end(); ++p)
+     p->size -= 0.4;
+}
 #endif
