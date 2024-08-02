@@ -53,25 +53,56 @@ void draw_arena(float ship_x, float ship_y)
 
 }
 
-void draw_ship(Ship* ship)
+
+void draw_gun(float r, float g, float b)
+{
+    glColor3f(1.0, 1.0, 1.0);
+
+    //lines
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(0.0, 0.05);
+    glVertex2f(0.005, 0.025);
+    glVertex2f(-0.005, 0.025);
+    glEnd();
+
+    glColor3f(r, g, b);
+
+    //lines
+    glBegin(GL_POLYGON);
+    glVertex2f(0.0, 0.05);
+    glVertex2f(0.005, 0.025);
+    glVertex2f(-0.005, 0.025);
+    glEnd();
+
+}
+
+void draw_ship(Ship* ship, bool missile)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
     //color, translate, rotate
-    glColor3f(ship->r, ship->g, ship->b);
     glTranslatef(ship->x, ship->y, 1.0);
     glRotatef(ship->angle - 90, 0.0, 0.0, 1.0);
 
-    //lines
-    glBegin(GL_POLYGON);
+    glColor3f(ship->r2, ship->g2, ship->b2);
+
+    glBegin(GL_TRIANGLES);
+    glVertex2f(0.0, 0.025);
+    glVertex2f(-0.02, -0.025);
+    glVertex2f(0.0, -0.0125);
+    glEnd();
+
+    glColor3f(ship->r3, ship->g3, ship->b3); 
+
+    glBegin(GL_TRIANGLES);
     glVertex2f(0.0, 0.025);
     glVertex2f(0.02, -0.025);
     glVertex2f(0.0, -0.0125);
-    glVertex2f(-0.02, -0.025);
     glEnd();
 
-    glColor3f(ship->r2, ship->g2, ship->b2);
+    glColor3f(ship->r, ship->g, ship->b);
+    //lines
     glBegin(GL_LINE_LOOP);
     glVertex2f(0.0, 0.025);
     glVertex2f(0.02, -0.025);
@@ -79,9 +110,18 @@ void draw_ship(Ship* ship)
     glVertex2f(-0.02, -0.025);
     glEnd();
 
+    glBegin(GL_LINE);
+    glVertex2f(0.0, 0.025);
+    glVertex2f(0.0, -0.025);
+    glEnd();
+
+    if(missile) draw_gun(ship->r3, ship->g3, ship->b3);
+    else draw_gun(ship->r2, ship->g2, ship->b2);
+
     glPopMatrix();
 
 }
+
 
 void draw_asteroid(Asteroid* asteroid)
 {
@@ -141,7 +181,7 @@ void draw_particles(std::list<Particle> particles)
         glBegin(GL_POINTS);
         glVertex2f(p->x, p->y);
         glEnd();
-    }
+    } 
 
     glPopMatrix();
 }

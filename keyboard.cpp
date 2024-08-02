@@ -11,11 +11,12 @@ bool keystate[4];
 
 bool start_game = false;
 bool new_round = false;
+bool missile = false;
 
 //keys
 void on_key_press(unsigned char key, int x, int y)
 {
-  if(key == 27) {
+  if(key == 'q' || key == 'Q') {
     keystate[0] = true;
   } else if(key == 'w' || key == 'W') {
     keystate[1] = true;
@@ -23,7 +24,9 @@ void on_key_press(unsigned char key, int x, int y)
     keystate[2] = true;
   } else if(key == 'd' || key == 'D') {
     keystate[3] = true;
-  } 
+  } else if(key == 'z' || key == 'Z') {
+    missile = !missile;
+  }
 
   start_game = true;
   new_round = true;

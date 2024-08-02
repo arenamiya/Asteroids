@@ -24,8 +24,9 @@
 #include "keyboard.cpp"
 #include "entities/ship.cpp"
 
+
 #define TURN_SPEED 10 //rotation of the ship
-#define MAX_SPEED 0.04 //the max speed of the ship (for acceleration)
+#define MAX_SPEED 0.05 //the max speed of the ship (for acceleration)
 #define MIN_SPEED 0.01 //the min speed of the ship (for de-acceleration)
 #define NEW_WAVE 14000 //the amount of ms it takes for a new round
 
@@ -48,7 +49,6 @@ void reset_game()
   asteroids.push_back(Asteroid());
   game_over = false;
   new_round = false;
-  // start_game = false;
 }
 
 //true if the objects coordinates are over the border's coordinates
@@ -67,6 +67,8 @@ void on_mouse_click(int button, int state, int x, int y)
       ship->shoot_bullet();
       break;
   }
+  start_game = true;
+  new_round = true;
 }
 
 void keys()
@@ -106,23 +108,16 @@ void on_display()
 
   draw_particles(ship->particles);
 
-  for(std::list<Asteroid>::iterator d = destroyed_asteroids.begin(); d != destroyed_asteroids.end(); ++d) {
-    d->shoot_particles();
-    if(d->particleSize >= 0.5 && wave_timer % 500) {
-      d->change_particle_size();
-    } else if (d->particleSize < 0.5) {
-      destroyed_asteroids.erase(d);
-      break;
-    }
-    draw_particles(d->particles);
-  }
+  draw_ship(ship, missile);
 
   draw_bullets(ship, 7.0); //ship and bullet size
 
   for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) 
     draw_asteroid(&*a);
-
-  draw_ship(ship);
+ 
+  for (std::list<Asteroid>::iterator d = destroyed_asteroids.begin(); d != destroyed_asteroids.end(); d++) {
+    draw_particles(d->particles);
+  }
 
   draw_text(std::to_string(score), -0.95, 0.9);
   draw_text(std::to_string(wave_timer/1000), 0.9, 0.9);
@@ -140,7 +135,9 @@ void on_display()
 }
 
 void asteroid_functions() {
-  for (std::list<Asteroid>::iterator a = asteroids.begin(); a != asteroids.end(); ++a) {
+
+  std::list<Asteroid>::iterator a = asteroids.begin();
+  while (a != asteroids.end()) {
     a->shoot_asteroid();
 
     if(a->passedBorder) { //check if asteroids hit border
@@ -152,7 +149,8 @@ void asteroid_functions() {
         }
     } else if(!a->passedBorder && !has_hit_border(a->x, a->y)) {
       //erase asteroid if it never goes into the border
-      if(!(powf(a->x - 0, 2) + powf(a->y - 0, 2) < powf(2.0, 2))) { 
+      if(!(powf(a->x,2) + powf(a->y,2) < 4.0)) { 
+        std::cout << "pointer free when asteroid erased when its too far\n";
         asteroids.erase(a);
         break;
       }
@@ -160,40 +158,47 @@ void asteroid_functions() {
     }
 
     for (std::list<Asteroid>::iterator a2 = asteroids.begin(); a2 != asteroids.end(); ++a2) {
-      if(a2 != a && a2->passedBorder && a->passedBorder && a->has_collided_with(a2->x, a2->y, a2->radius) && !a2->justSplit && !a->justSplit) {
+      if(a2 != a && a2->passedBorder && a->passedBorder && a->has_collided_with(a2->x, a2->y, a2->radius) && !a2->split && !a->split) {
         a->change_trajectory();
         a2->change_trajectory();
-      } else if (a2 != a && a2->justSplit && a->justSplit && !a->has_collided_with(a2->x, a2->y, a2->radius)) {
-        a->justSplit = false;
-        a2->justSplit = false;
+      } else if (a2 != a && a2->split && a->split && !a->has_collided_with(a2->x, a2->y, a2->radius)) {
+        a->split = false;
+        a2->split = false;
       }
+      
     }
   
     if(a->has_collided_with(ship->x, ship->y, 0.05)) { //check if asteroids collides with ship
       game_over = true;
       new_round = false;
-      break;
+
     }
 
-    for (std::list<Bullet>::iterator b = ship->bullets.begin(); b != ship->bullets.end(); ++b) {   
+  
+    std::list<Bullet>::iterator b = ship->bullets.begin();
+    while (b != ship->bullets.end()) {   
       if(a->has_collided_with(b->x, b->y, 0.01)) { //check if the asteroid collides with bullets
-        ship->bullets.erase(b);
         if(a->hitPoints > 0) {
           a->hitPoints -= 1;
         } else {
           score += a->points * wave_round;
-          if(!a->split) { //check if an asteroid hasn't been split already
+          if(!a->split & !a->destroyed) { //check if an asteroid should be split
             asteroids.push_back(Asteroid(&*a));
             asteroids.push_back(Asteroid(&*a));
-          } else {
-            a->generate_particles();
-            destroyed_asteroids.push_back(*a);
+          } else { //this generates particles for asteroids that are fully destroyed
+            a->generate_particles(); 
+            destroyed_asteroids.push_back(*a); 
           }
-          asteroids.erase(a);
-          break;
+          a = asteroids.erase(a);
+          
         }
-      } else if (has_hit_border(b->x, b->y)) { //check if bullets collides with wall
-        ship->bullets.erase(b);
+        b = ship->bullets.erase(b);
+        break;
+      }
+      if (has_hit_border(b->x, b->y)) { //check if bullets collides with wall
+        b = ship->bullets.erase(b);
+      } else {
+        b++;
       }
     }
 
@@ -201,8 +206,21 @@ void asteroid_functions() {
       a->change_particle_size();
     }
 
+    a++;
+
   }
+
+  std::list<Asteroid>::iterator d = destroyed_asteroids.begin(); 
+  while (d != destroyed_asteroids.end()) {
+    d->change_particle_size();
+    d->shoot_particles();
+    if(d->particleSize < 0) d = destroyed_asteroids.erase(d);
+    d++;
+  }
+  
 }
+
+
 void timer(int value)
 {
   
@@ -227,8 +245,8 @@ void timer(int value)
   if(wave_timer % 500) ship->change_particle_size(); //change particle size every 500 ms
   if(!ship->moving && ship->particles.size() > 0) ship->particles.pop_front(); //remove particles if the ship isn't moving
 
-  wave_timer += 100; //add 100 ms to wave timer
-
+  if(game_over != true) wave_timer += 100; //add 100 ms to wave timer
+  
   glutTimerFunc(100, timer, 0);
   on_display();
 }
@@ -242,6 +260,7 @@ int main(int argc, char **argv)
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   
   glutCreateWindow("Asteroids I3DG A1");
+  // glClearColor(0.5f, 0.5f, 1.0f, 1.0f);  
   glutFullScreen();
 
   glutKeyboardFunc(on_key_press);

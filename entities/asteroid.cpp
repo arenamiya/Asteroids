@@ -4,12 +4,11 @@
 #include <stdlib.h>
 #include <cmath>
 #include <random>
-#include <iostream>
 #include <list>
 #include "particle.cpp"
 
-int max_asteroid_speed = 5;
-int min_asteroid_speed = 1;
+int max_asteroid_speed = 3;
+int min_asteroid_speed = 2;
 
 float off_arena_radius = 2.0;
 
@@ -34,11 +33,10 @@ class Asteroid
     int hitPoints;
     int points;
     int edges;
-    bool destroyed;
     bool passedBorder;
     bool split;
-    bool justSplit;
     bool hittingWall;
+    bool destroyed;
     std::list<Particle> particles;
     float particleSize;
 
@@ -53,12 +51,11 @@ Asteroid::Asteroid()
     edges = rand() % 5 + 5; //(5-15 edges)
 
     int n = rand() % 10 + 5; 
-    //a random n decides radius, HP and the score points of the asteroid
+    //a random n decides the radius of the asteroid (between 5-14)
     radius = float(n) / 100;
     hitPoints = n/4;
     points = hitPoints * 100;
 
-    destroyed = false;
     trajectory = rand() % 360;
 
     x = cos((trajectory-180) * M_PI / 180) * off_arena_radius;
@@ -66,7 +63,7 @@ Asteroid::Asteroid()
 
     passedBorder = false;
     split = false;
-    justSplit = false;
+    destroyed = false;
     hittingWall = false;
 
 }
@@ -82,7 +79,8 @@ Asteroid::Asteroid(Asteroid* asteroid)
     hitPoints = asteroid->hitPoints / 4;
     points = hitPoints * 100;
 
-    destroyed = false;
+    // if(rand() % 2 == 0)  trajectory = asteroid->trajectory + 45;
+    // else trajectory = asteroid->trajectory - 45;
     trajectory = rand() % 360;
 
     x = asteroid->x;
@@ -90,7 +88,7 @@ Asteroid::Asteroid(Asteroid* asteroid)
 
     passedBorder = true;
     split = true;
-    justSplit = true;
+    destroyed = true;
     hittingWall = false;
 
 }
@@ -115,6 +113,9 @@ bool Asteroid::has_collided_with(float x, float y, float radius)
     return powf(x - this->x, 2) + powf(y - this->y, 2) <= powf(radius + this->radius, 2); 
 }
 
+//  This command generates a random number of 5-15 particles
+//  the particles will start off at a size of 10 and all go in random
+//  trajectoryies at random speeds
 void Asteroid::generate_particles()
 {
 
@@ -133,6 +134,8 @@ void Asteroid::generate_particles()
     particleSize = 10;
 }
 
+    // This command translates each particle in the
+    // particles list of the asteroid by the speed it was given
 void Asteroid::shoot_particles()
 {
     for (std::list<Particle>::iterator p = particles.begin(); p != particles.end(); ++p) {
@@ -141,10 +144,14 @@ void Asteroid::shoot_particles()
     }
 }
 
+    // This command changes the particle size in the particle list of the asteroid
+    // by 0.4 until it was erased
 void Asteroid::change_particle_size()
 {
     particleSize -= 0.4;
-    for (std::list<Particle>::iterator p=particles.begin(); p != particles.end(); ++p)
+    for (std::list<Particle>::iterator p=particles.begin(); p != particles.end(); ++p) {
      p->size -= 0.4;
+     if(p->size < 0) p = particles.erase(p);
+    }
 }
 #endif

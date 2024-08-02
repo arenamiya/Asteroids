@@ -6,6 +6,7 @@
 #include <cmath>
 #include <list>
 
+
 class Ship 
 {
     public:
@@ -16,8 +17,9 @@ class Ship
 
     float angle; // angle
     float x, y; // coordinates
-    float r, g, b; // fill colors
-    float r2, g2, b2; //outline colors
+    float r, g, b; // outline colors
+    float r2, g2, b2; //fill colors left side
+    float r3, g3, b3; //fill colors right side
     float speed; // speed
     bool moving;
 
@@ -31,10 +33,12 @@ class Ship
 
 Ship::Ship()
 {
-    angle = 45;
-    x = -0.5; y = -0.5; 
-    r = 0.0; g = 1.0; b = 0.0; //player fill color
-    r2 = 0; g2 = 1; b2 = 0; //player outline color
+    angle = 90;
+    x = 0; y = 0; 
+    r = 1.0; g = 1.0; b = 1.0; //player fill color
+    r2 = 1.0; g2 = 0.5; b2 = 0.5; //player outline color
+    r3 = 0.5; g3 = 1.0; b3 = 1.0; //player outline color
+
     speed = 0.02;
     moving = false;
     firingRate = 0.1;

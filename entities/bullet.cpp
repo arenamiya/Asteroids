@@ -2,6 +2,7 @@
 #ifndef _BULLET_CLASS_
 #define _BULLET_CLASS_
 
+#include <cmath>
 
 class Bullet
 {
